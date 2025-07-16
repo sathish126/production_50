@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Production-50</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0B0B1A 0%, #1A0B2E 50%, #0F0F23 100%);
+            margin: 0;
+            padding: 20px;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #A855F7 0%, #00D4FF 50%, #FF3D9A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #C084FC;
+            font-size: 16px;
+        }
+        .content {
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(45deg, #A855F7, #00D4FF);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: #888;
+            font-size: 14px;
+        }
+        .highlight {
+            color: #00D4FF;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Production-50</div>
+            <div class="subtitle">Golden Jubilee Tech Festival</div>
+        </div>
+        
+        <div class="content">
+            <h2>Welcome to the Future, {{name}}! 🚀</h2>
+            
+            <p>Thank you for registering for <span class="highlight">Production-50</span>, the most anticipated tech festival of the year! We're excited to have you join us for this incredible journey into the future of technology.</p>
+            
+            <p>To complete your registration and unlock access to all our amazing features, please verify your email address by clicking the button below:</p>
+            
+            <div style="text-align: center;">
+                <a href="{{verification_link}}" class="button">🌟 Verify My Email</a>
+            </div>
+            
+            <p>Once verified, you'll be able to:</p>
+            <ul>
+                <li>✨ Register for workshops and events</li>
+                <li>🎫 Access your personalized dashboard</li>
+                <li>📱 Generate your entry QR code</li>
+                <li>🔔 Receive important event updates</li>
+                <li>💳 Make secure payments</li>
+            </ul>
+            
+            <p><strong>Event Details:</strong></p>
+            <ul>
+                <li>📅 Date: August 20, 2025</li>
+                <li>🕘 Time: 9:00 AM - 6:00 PM IST</li>
+                <li>📍 Venue: PSG College of Technology, Coimbatore</li>
+            </ul>
+            
+            <p>If you didn't create this account, please ignore this email.</p>
+        </div>
+        
+        <div class="footer">
+            <p>© {{current_year}} Production-50 | PSG College of Technology</p>
+            <p>This email was sent to you because you registered for Production-50.</p>
+            <p>If you have any questions, contact us at info@production50.com</p>
+        </div>
+    </div>
+</body>
+</html>

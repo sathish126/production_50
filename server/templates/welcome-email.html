@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Production-50!</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0B0B1A 0%, #1A0B2E 50%, #0F0F23 100%);
+            margin: 0;
+            padding: 20px;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #A855F7 0%, #00D4FF 50%, #FF3D9A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .content {
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(45deg, #A855F7, #00D4FF);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            margin: 10px;
+        }
+        .highlight {
+            color: #00D4FF;
+            font-weight: bold;
+        }
+        .success {
+            color: #10B981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Production-50</div>
+            <div style="color: #C084FC;">🎉 Welcome to the Future! 🎉</div>
+        </div>
+        
+        <div class="content">
+            <h2>Congratulations, {{name}}! ✅</h2>
+            
+            <p class="success">Your email has been successfully verified!</p>
+            
+            <p>Welcome to <span class="highlight">Production-50</span> - the golden jubilee celebration of technological excellence at PSG College of Technology. You're now part of an exclusive community of innovators, creators, and future leaders!</p>
+            
+            <h3>🚀 What's Next?</h3>
+            <p>Now that you're verified, you can access all the amazing features:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{dashboard_link}}" class="button">🎯 Go to Dashboard</a>
+                <a href="{{frontend_url}}/events" class="button">🎪 Browse Events</a>
+            </div>
+            
+            <h3>🌟 Event Highlights</h3>
+            <ul>
+                <li>🤖 AI Revolution Hackathon</li>
+                <li>🔧 Robotics Championship</li>
+                <li>💡 Tech Innovation Expo</li>
+                <li>🛡️ Cybersecurity Summit</li>
+                <li>🧠 Machine Learning Masterclass</li>
+                <li>🌐 Full Stack Web Development</li>
+                <li>📱 IoT and Smart Systems</li>
+                <li>⛓️ Blockchain Development</li>
+            </ul>
+            
+            <h3>📅 Important Dates</h3>
+            <ul>
+                <li><strong>Event Date:</strong> {{event_date}}</li>
+                <li><strong>Early Bird Registration:</strong> Open Now!</li>
+                <li><strong>Final Registration:</strong> August 15, 2025</li>
+            </ul>
+            
+            <h3>💡 Pro Tips</h3>
+            <ul>
+                <li>🎫 Register early for workshops - limited seats!</li>
+                <li>📱 Download your QR code for easy entry</li>
+                <li>🔔 Enable notifications for updates</li>
+                <li>🏨 Book accommodation if needed</li>
+            </ul>
+            
+            <p>Get ready for an unforgettable experience filled with learning, innovation, and networking opportunities!</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); color: #888; font-size: 14px;">
+            <p>© {{current_year}} Production-50 | PSG College of Technology</p>
+            <p>Need help? Contact us at info@production50.com</p>
+        </div>
+    </div>
+</body>
+</html>
