@@ -1,8 +1,8 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const pool = require('../config/database');
+const User = require('../models/User');
+const OTP = require('../models/OTP');
 const emailService = require('../services/emailService');
 const { validateRegistration, validateLogin, validatePasswordReset } = require('../middleware/validation');
 const { authLimiter } = require('../middleware/rateLimiter');
@@ -12,76 +12,26 @@ const router = express.Router();
 // User Registration
 router.post('/register', authLimiter, validateRegistration, async (req, res) => {
   try {
-    const {
-      full_name,
-      email,
-      password,
-      phone,
-      date_of_birth,
-      gender,
-      institution,
-      participation_type,
-      emergency_contact_name,
-      emergency_contact_phone,
-      emergency_relationship
-    } = req.body;
-
-    // Check if user already exists
-    const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'User with this email already exists'
-      });
-    }
-
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 12);
+    const userData = req.body;
     
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-
-    // Insert user
-    const result = await pool.query(`
-      INSERT INTO users (
-        full_name, email, password_hash, phone, date_of_birth, gender,
-        institution, participation_type, emergency_contact_name,
-        emergency_contact_phone, emergency_relationship, verification_token
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-      RETURNING id, full_name, email
-    `, [
-      full_name, email, passwordHash, phone, date_of_birth, gender,
-      institution, participation_type, emergency_contact_name,
-      emergency_contact_phone, emergency_relationship, verificationToken
-    ]);
-
-    const user = result.rows[0];
-
-    // Send verification email
-    try {
-      await emailService.sendVerificationEmail({
-        ...user,
-        verification_token: verificationToken
-      });
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError);
-      // Don't fail registration if email fails
-    }
+    // Create user
+    const user = await User.create(userData);
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please check your email for verification.',
-      user_id: user.id
+      message: 'Registration successful.',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        uniqueCode: user.uniqueCode
+      }
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error:', error.message);
     res.status(500).json({
       success: false,
-      message: 'Registration failed. Please try again.'
+      message: error.message || 'Registration failed. Please try again.'
     });
   }
 });
@@ -91,23 +41,18 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
   try {
     const { email, password, remember_me } = req.body;
 
-    // Find user
-    const result = await pool.query(
-      'SELECT id, full_name, email, password_hash, is_verified, is_active FROM users WHERE email = $1',
-      [email]
-    );
-
-    if (result.rows.length === 0) {
+    // Find user by email
+    const user = await User.findByEmail(email);
+    
+    if (!user) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
       });
     }
 
-    const user = result.rows[0];
-
     // Check if account is active
-    if (!user.is_active) {
+    if (!user.isActive) {
       return res.status(401).json({
         success: false,
         message: 'Account has been deactivated'
@@ -115,7 +60,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     }
 
     // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    const isValidPassword = await User.validatePassword(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({
         success: false,
@@ -123,10 +68,13 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       });
     }
 
+    // Update last login
+    await User.updateLastLogin(email);
+
     // Generate JWT token
     const tokenExpiry = remember_me ? '30d' : '7d';
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: tokenExpiry }
     );
@@ -136,10 +84,11 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       message: 'Login successful',
       token,
       user: {
-        id: user.id,
-        full_name: user.full_name,
+        id: user._id,
+        name: user.name,
         email: user.email,
-        is_verified: user.is_verified
+        isVerified: user.isVerified,
+        uniqueCode: user.uniqueCode
       }
     });
   } catch (error) {
@@ -147,6 +96,86 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Login failed. Please try again.'
+    });
+  }
+});
+
+// Send OTP for email verification
+router.post('/send-otp', authLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Generate OTP
+    const otp = OTP.generateOTP();
+    
+    // Save OTP to database
+    await OTP.create(email, otp, 10); // 10 minutes expiry
+
+    // Send OTP email
+    try {
+      await emailService.sendOTPEmail(email, otp);
+    } catch (emailError) {
+      console.error('Failed to send OTP email:', emailError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP email'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'OTP sent successfully to your email'
+    });
+  } catch (error) {
+    console.error('Send OTP error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send OTP'
+    });
+  }
+});
+
+// Verify OTP
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and OTP are required'
+      });
+    }
+
+    // Verify OTP
+    const verificationResult = await OTP.verify(email, otp);
+    
+    if (!verificationResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: verificationResult.message
+      });
+    }
+
+    // Update user verification status
+    await User.updateVerificationStatus(email, true);
+
+    res.json({
+      success: true,
+      message: 'Email verified successfully'
+    });
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'OTP verification failed'
     });
   }
 });
@@ -163,32 +192,14 @@ router.post('/verify-email', async (req, res) => {
       });
     }
 
-    // Find user with verification token
-    const result = await pool.query(
-      'SELECT id, full_name, email FROM users WHERE verification_token = $1 AND is_verified = false',
-      [token]
-    );
-
-    if (result.rows.length === 0) {
+    // Update user verification status
+    const updateResult = await User.updateVerificationStatus(token, true);
+    
+    if (updateResult.modifiedCount === 0) {
       return res.status(400).json({
         success: false,
         message: 'Invalid or expired verification token'
       });
-    }
-
-    const user = result.rows[0];
-
-    // Update user as verified
-    await pool.query(
-      'UPDATE users SET is_verified = true, verification_token = NULL WHERE id = $1',
-      [user.id]
-    );
-
-    // Send welcome email
-    try {
-      await emailService.sendWelcomeEmail(user);
-    } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError);
     }
 
     res.json({
@@ -216,31 +227,23 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
       });
     }
 
-    // Find user
-    const result = await pool.query(
-      'SELECT id, full_name, email FROM users WHERE email = $1 AND is_active = true',
-      [email]
-    );
+    // Find user by email
+    const user = await User.findByEmail(email);
 
     // Always return success to prevent email enumeration
-    if (result.rows.length === 0) {
+    if (!user || !user.isActive) {
       return res.json({
         success: true,
         message: 'If an account with this email exists, a password reset link has been sent.'
       });
     }
 
-    const user = result.rows[0];
-
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
     // Save reset token
-    await pool.query(
-      'UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE id = $3',
-      [resetToken, resetTokenExpiry, user.id]
-    );
+    await User.updateResetToken(user.email, resetToken, resetTokenExpiry);
 
     // Send reset email
     try {
@@ -268,28 +271,17 @@ router.post('/reset-password', validatePasswordReset, async (req, res) => {
     const { token, new_password } = req.body;
 
     // Find user with valid reset token
-    const result = await pool.query(
-      'SELECT id FROM users WHERE reset_token = $1 AND reset_token_expiry > NOW()',
-      [token]
-    );
+    const user = await User.findByResetToken(token);
 
-    if (result.rows.length === 0) {
+    if (!user || user.resetTokenExpiry < new Date()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid or expired reset token'
       });
     }
 
-    const user = result.rows[0];
-
-    // Hash new password
-    const passwordHash = await bcrypt.hash(new_password, 12);
-
-    // Update password and clear reset token
-    await pool.query(
-      'UPDATE users SET password_hash = $1, reset_token = NULL, reset_token_expiry = NULL WHERE id = $2',
-      [passwordHash, user.id]
-    );
+    // Update password
+    await User.updatePassword(user.email, new_password);
 
     res.json({
       success: true,

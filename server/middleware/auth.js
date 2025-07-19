@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../config/database');
+const User = require('../models/User');
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -16,21 +16,16 @@ const authenticateToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Verify user still exists and is active
-    const result = await pool.query(
-      'SELECT id, full_name, email, is_verified, is_active FROM users WHERE id = $1',
-      [decoded.userId]
-    );
+    const user = await User.findById(decoded.userId);
 
-    if (result.rows.length === 0) {
+    if (!user) {
       return res.status(401).json({ 
         success: false, 
         message: 'User not found' 
       });
     }
 
-    const user = result.rows[0];
-    
-    if (!user.is_active) {
+    if (!user.isActive) {
       return res.status(401).json({ 
         success: false, 
         message: 'Account deactivated' 
@@ -55,7 +50,7 @@ const authenticateToken = async (req, res, next) => {
 };
 
 const requireVerified = (req, res, next) => {
-  if (!req.user.is_verified) {
+  if (!req.user.isVerified) {
     return res.status(403).json({ 
       success: false, 
       message: 'Email verification required' 
@@ -66,19 +61,17 @@ const requireVerified = (req, res, next) => {
 
 const requireAdmin = async (req, res, next) => {
   try {
-    const result = await pool.query(
-      'SELECT role FROM admin_users WHERE email = $1 AND is_active = true',
-      [req.user.email]
-    );
-
-    if (result.rows.length === 0) {
+    // Check if user is admin (you can implement admin collection or add admin field to user)
+    const adminEmails = ['admin@production50.com']; // Configure admin emails
+    
+    if (!adminEmails.includes(req.user.email)) {
       return res.status(403).json({ 
         success: false, 
         message: 'Admin access required' 
       });
     }
 
-    req.admin = result.rows[0];
+    req.admin = { role: 'admin' };
     next();
   } catch (error) {
     return res.status(500).json({ 

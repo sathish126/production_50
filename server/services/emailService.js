@@ -87,6 +87,42 @@ class EmailService {
     });
   }
 
+  async sendOTPEmail(email, otp) {
+    const msg = {
+      to: email,
+      from: {
+        email: process.env.FROM_EMAIL,
+        name: 'Production-50 Team'
+      },
+      subject: '🔐 Your OTP for Production-50 Verification',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #0B0B1A 0%, #1A0B2E 50%, #0F0F23 100%); color: white; border-radius: 16px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #A855F7; font-size: 32px; margin-bottom: 10px;">Production-50</h1>
+            <p style="color: #C084FC; font-size: 16px;">Email Verification</p>
+          </div>
+          
+          <div style="background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 12px; text-align: center;">
+            <h2 style="color: white; margin-bottom: 20px;">Your Verification Code</h2>
+            <div style="background: linear-gradient(45deg, #A855F7, #00D4FF); padding: 20px; border-radius: 12px; margin: 20px 0;">
+              <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: white;">${otp}</span>
+            </div>
+            <p style="color: #C084FC; margin-bottom: 10px;">This code will expire in 10 minutes</p>
+            <p style="color: #888; font-size: 14px;">If you didn't request this code, please ignore this email.</p>
+          </div>
+          
+          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); color: #888; font-size: 14px;">
+            <p>© ${new Date().getFullYear()} Production-50 | PSG College of Technology</p>
+          </div>
+        </div>
+      `
+    };
+    
+    await sgMail.send(msg);
+    console.log(`✅ OTP email sent to ${email}`);
+    return true;
+  }
+
   async sendWelcomeEmail(user) {
     return this.sendEmail(user.email, 'welcome', {
       name: user.full_name,

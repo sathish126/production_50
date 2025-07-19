@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
+const mongodb = require('./config/mongodb');
 require('dotenv').config();
 
 // Import routes
@@ -14,6 +15,12 @@ const { generalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Connect to MongoDB
+mongodb.connect().catch(error => {
+  console.error('Failed to connect to MongoDB:', error);
+  process.exit(1);
+});
 
 // Security middleware
 app.use(helmet());
@@ -37,7 +44,10 @@ app.get('/health', (req, res) => {
     success: true,
     message: 'Production-50 API is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    database: {
+      mongodb: mongodb.getDb() ? 'connected' : 'disconnected'
+    }
   });
 });
 
@@ -76,6 +86,16 @@ app.listen(PORT, () => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
+  mongodb.disconnect().then(() => {
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  mongodb.disconnect().then(() => {
+    process.exit(0);
+  });
   process.exit(0);
 });
 
