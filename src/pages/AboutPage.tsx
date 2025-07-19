@@ -1,7 +1,110 @@
 import React from 'react';
-import { Users, Award, Calendar, Building, Star, Target } from 'lucide-react';
+import { Users, Award, Calendar, Building, Star, Target, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
+  const alumniTestimonials = [
+    {
+      name: "Dr. Rajesh Kumar",
+      batch: "1995",
+      position: "CTO, Tech Innovations Inc.",
+      image: "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=150&h=150",
+      testimonial: "PSG College shaped my career in ways I never imagined. The foundation I received here has been instrumental in my journey to becoming a technology leader."
+    },
+    {
+      name: "Priya Sharma",
+      batch: "2010",
+      position: "Senior Software Engineer, Google",
+      image: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=150&h=150",
+      testimonial: "The quality of education and the innovative environment at PSG prepared me for the challenges in the tech industry. Proud to be an alumna!"
+    },
+    {
+      name: "Arun Krishnan",
+      batch: "2005",
+      position: "Founder, StartupTech Solutions",
+      image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150",
+      testimonial: "PSG College not only gave me technical knowledge but also the entrepreneurial spirit to start my own company. Forever grateful!"
+    }
+  ];
+
+  const studentCorner = [
+    {
+      name: "Ananya Patel",
+      year: "Final Year CSE",
+      achievement: "Winner - National Coding Championship 2024",
+      image: "https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=150&h=150"
+    },
+    {
+      name: "Vikram Singh",
+      year: "Third Year ECE",
+      achievement: "Best Innovation Award - Tech Fest 2024",
+      image: "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=150&h=150"
+    },
+    {
+      name: "Meera Nair",
+      year: "Second Year IT",
+      achievement: "Published Research Paper in IEEE",
+      image: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=150&h=150"
+    },
+    {
+      name: "Arjun Reddy",
+      year: "Final Year Mechanical",
+      achievement: "International Robotics Competition Finalist",
+      image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150"
+    }
+  ];
+
+  const sponsors = [
+    { name: "Google", logo: "https://via.placeholder.com/120x60/4285F4/FFFFFF?text=Google" },
+    { name: "Microsoft", logo: "https://via.placeholder.com/120x60/00A4EF/FFFFFF?text=Microsoft" },
+    { name: "Amazon", logo: "https://via.placeholder.com/120x60/FF9900/FFFFFF?text=Amazon" },
+    { name: "IBM", logo: "https://via.placeholder.com/120x60/1261FE/FFFFFF?text=IBM" },
+    { name: "Intel", logo: "https://via.placeholder.com/120x60/0071C5/FFFFFF?text=Intel" },
+    { name: "TCS", logo: "https://via.placeholder.com/120x60/004C8C/FFFFFF?text=TCS" },
+    { name: "Infosys", logo: "https://via.placeholder.com/120x60/007CC3/FFFFFF?text=Infosys" },
+    { name: "Wipro", logo: "https://via.placeholder.com/120x60/634F9C/FFFFFF?text=Wipro" }
+  ];
+
+  const facultyCoordinators = [
+    {
+      name: "Dr. Suresh Kumar",
+      position: "Professor & Head, CSE",
+      image: "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    },
+    {
+      name: "Dr. Lakshmi Priya",
+      position: "Associate Professor, ECE",
+      image: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    },
+    {
+      name: "Dr. Ramesh Babu",
+      position: "Professor, Mechanical",
+      image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    }
+  ];
+
+  const studentCoordinators = [
+    {
+      name: "Rahul Sharma",
+      position: "Event Coordinator, Final Year CSE",
+      image: "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    },
+    {
+      name: "Sneha Patel",
+      position: "Technical Coordinator, Final Year ECE",
+      image: "https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    },
+    {
+      name: "Karthik Reddy",
+      position: "Marketing Coordinator, Final Year IT",
+      image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    },
+    {
+      name: "Divya Krishnan",
+      position: "Logistics Coordinator, Final Year Mechanical",
+      image: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=200&h=200"
+    }
+  ];
+
   return (
     <div className="min-h-screen pt-20 py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -122,6 +225,123 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Alumni Testimonials Section */}
+        <div className="mb-16">
+          <h2 className="orbitron text-3xl font-bold cosmic-gradient text-center mb-8">
+            Alumni Testimonials
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {alumniTestimonials.map((alumni, index) => (
+              <div key={index} className="glass-morphism p-6 rounded-2xl">
+                <div className="flex items-center mb-4">
+                  <img 
+                    src={alumni.image}
+                    alt={alumni.name}
+                    className="w-16 h-16 rounded-full object-cover mr-4"
+                  />
+                  <div>
+                    <h3 className="text-white font-semibold">{alumni.name}</h3>
+                    <p className="text-purple-300 text-sm">Batch of {alumni.batch}</p>
+                    <p className="text-gray-400 text-xs">{alumni.position}</p>
+                  </div>
+                </div>
+                <Quote className="w-6 h-6 text-purple-400 mb-2" />
+                <p className="text-gray-300 text-sm italic">"{alumni.testimonial}"</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Students Corner Section */}
+        <div className="mb-16">
+          <h2 className="orbitron text-3xl font-bold cosmic-gradient text-center mb-8">
+            Students Corner
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {studentCorner.map((student, index) => (
+              <div key={index} className="glass-morphism p-6 rounded-2xl text-center">
+                <img 
+                  src={student.image}
+                  alt={student.name}
+                  className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                />
+                <h3 className="text-white font-semibold mb-1">{student.name}</h3>
+                <p className="text-purple-300 text-sm mb-2">{student.year}</p>
+                <p className="text-gray-300 text-xs">{student.achievement}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sponsors Section */}
+        <div className="mb-16">
+          <h2 className="orbitron text-3xl font-bold cosmic-gradient text-center mb-8">
+            Our Sponsors
+          </h2>
+          <div className="glass-morphism p-8 rounded-2xl overflow-hidden">
+            <div className="sponsors-scroll">
+              <div className="sponsors-track">
+                {[...sponsors, ...sponsors].map((sponsor, index) => (
+                  <div key={index} className="sponsor-item">
+                    <img 
+                      src={sponsor.logo}
+                      alt={sponsor.name}
+                      className="h-12 object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Team Section */}
+        <div className="mb-16">
+          <h2 className="orbitron text-3xl font-bold cosmic-gradient text-center mb-8">
+            Our Team
+          </h2>
+          
+          {/* Faculty Coordinators */}
+          <div className="mb-12">
+            <h3 className="orbitron text-2xl font-bold text-center mb-6 text-purple-300">
+              Faculty Coordinators
+            </h3>
+            <div className="grid md:grid-cols-3 gap-8">
+              {facultyCoordinators.map((faculty, index) => (
+                <div key={index} className="glass-morphism p-6 rounded-2xl text-center">
+                  <img 
+                    src={faculty.image}
+                    alt={faculty.name}
+                    className="w-24 h-24 rounded-full object-cover mx-auto mb-4"
+                  />
+                  <h4 className="text-white font-semibold mb-2">{faculty.name}</h4>
+                  <p className="text-gray-300 text-sm">{faculty.position}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Student Coordinators */}
+          <div>
+            <h3 className="orbitron text-2xl font-bold text-center mb-6 text-blue-300">
+              Student Coordinators
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {studentCoordinators.map((student, index) => (
+                <div key={index} className="glass-morphism p-6 rounded-2xl text-center">
+                  <img 
+                    src={student.image}
+                    alt={student.name}
+                    className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                  />
+                  <h4 className="text-white font-semibold mb-2">{student.name}</h4>
+                  <p className="text-gray-300 text-sm">{student.position}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Departments */}
         <div className="mb-16">
           <h2 className="orbitron text-3xl font-bold cosmic-gradient text-center mb-8">
@@ -183,6 +403,40 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .sponsors-scroll {
+          width: 100%;
+          overflow: hidden;
+        }
+        
+        .sponsors-track {
+          display: flex;
+          animation: scroll 30s linear infinite;
+          width: calc(240px * 16);
+        }
+        
+        .sponsor-item {
+          flex: 0 0 240px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 20px;
+        }
+        
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-240px * 8));
+          }
+        }
+        
+        .sponsors-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
     </div>
   );
 };
